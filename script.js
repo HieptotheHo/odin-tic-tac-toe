@@ -34,21 +34,51 @@ const gameBoard = (()=> {
     return {getTile, setTile, reset}
 })();
 
-
-/
+//DISPLAY CONTROLER
 const displayController = (()=> {
     const tileElements = document.querySelectorAll('.tile');
-   
+    const resetButton = document.getElementById('reset-button');
+    const message = document.querySelector('#message');
 
     tileElements.forEach((tile)=> {
         tile.addEventListener('click',(e)=> {
             if(gameController.getIsOver()) return;
-            gameBoard.
+            gameController.playRound(parseInt(e.target.dataset.index));
+            updateGameboard();
         })
     })
 
+    const setMessage = (winner) => {
+        if(winner === 'Draw') {
+            setMessageElement("It's a draw!");
+        } else {
+            setMessageElement(`Player ${winner} has won!`);
+        }
+    };
+
+    const setMessageElement = (inputMessage) => {
+        message.textContent = inputMessage;
+    };
+
+    resetButton.addEventListener('click',(e)=> {
+        gameBoard.reset();
+        gameController.reset();
+        updateGameboard();
+        setMessageElement("Player X's turn")
+    })
+
+
+    //UPDATE gameboard này dựa trên entity gameBoard
+    const updateGameboard = () => {
+        for(let i =0;i<tileElements.length;i++) {
+            tileElements[i].textContent = gameBoard.getTile(i);
+        }
+    }
+
+    return {setMessage, setMessageElement}
 })();
 
+//GAME CONTROLER
 const gameController = (()=> {
     const playerOne = playerFactory('X');
     const playerTwo = playerFactory('O');
@@ -58,7 +88,11 @@ const gameController = (()=> {
 
     //ROUND    this is the main section/
     const playRound = (tileIndex) => {
-        gameBoard.setTile(tileIndex, getCurrentPlayerTurn)
+        gameBoard.setTile(tileIndex, getCurrentPlayerTurn())
+        if(checkWin(tileIndex)) {
+            // displayController.setMessage
+        }
+        round++;
     }
 
     //PLAYER TURN
@@ -72,7 +106,7 @@ const gameController = (()=> {
     }
     
     //WIN!!!
-    const checkWin = () => {
+    const checkWin = (tileIndex) => {
         const winPossibilites = [
             [0, 1, 2],
             [3, 4, 5],
@@ -85,8 +119,10 @@ const gameController = (()=> {
         ]
         return winPossibilites
         //filter để loại khả năng nào không có cái bước mới vừa đi
-        .filter((combination) => combination.includes(fieldIndex))
+        .filter((combination) => combination.includes(tileIndex))
+        //some ở đây dùng dể xem có ít nhất 1 pattern nào hợp không
         .some((possibleCombination) => {
+            //check pattern đó (là 1 mảng) có index trùng với "O" không hoặc "X" không.
             possibleCombination.every(
                 (index) => gameBoard.getTile(index) === getCurrentPlayerTurn()
             )
@@ -99,5 +135,10 @@ const gameController = (()=> {
             tileElements[i].textContent=gameBoard.getTile(i);
         }
     }
-    return {getCurrentPlayerTurn, getIsOver, updateGameboard}
+
+    const reset = () => {
+        round = 1;
+        isOver = false;
+    }
+    return {reset, playRound, checkWin, getCurrentPlayerTurn, getIsOver, updateGameboard,}
 })();

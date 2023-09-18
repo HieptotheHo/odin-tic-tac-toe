@@ -21,6 +21,7 @@
     display: flex;
     justify-content: space-evenly;
     text-align: center;
+    margin-top: 2em;
 }
 #game-board {
     
@@ -49,9 +50,12 @@
 }
 
 #reset-button {
-    width: 120px;
-    height: 30px;
-    display:none;
+    width: 150px;
+    height: 60px;
+    /* display:none; */
+    border-radius: 10px;
+    background-color: brown;
+    color: white;
 }
 
 input {
@@ -64,4 +68,14 @@ input {
 .tile {
     font-size: 120px;
     padding: 20%;
+}
+
+.player > * {
+    margin-top: 2em;
+}
+
+
+#message {
+    text-align: center;
+    font-size: 2rem;
 }
